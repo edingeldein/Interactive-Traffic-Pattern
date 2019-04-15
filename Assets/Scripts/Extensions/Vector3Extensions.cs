@@ -11,11 +11,11 @@ namespace Extensions
             Vector3 diff = targetHeading - currentHeading;
 
             if (diff.magnitude < 0.01f)
-                return targetHeading / targetHeading.magnitude;
+                return targetHeading.normalized;
 
             Vector3 diffVeloc = diff * angularVelocity;
             Vector3 newHeading = currentHeading + diffVeloc;
-            return newHeading / newHeading.magnitude;
+            return newHeading.normalized;
         }
     }
 }

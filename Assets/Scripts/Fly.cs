@@ -7,6 +7,7 @@ public class Fly : MonoBehaviour
 {
     public float speed = 5f;
     public float maxRotation = 6f;
+    public float cavScale = 4f;
     //public float minDist = 0.05f;
     public Transform[] waypoints;
 
@@ -48,10 +49,13 @@ public class Fly : MonoBehaviour
         // currentHeading = normalized instantaneous velocity vector of current aircraft.
         // If current heading isn't the same as the directional heading, turn towards the directional heading
         if (currentHeading != normalizedHeading)
-            currentHeading = currentHeading.TurnTowards(normalizedHeading, maxRotation * Time.deltaTime);
+        {
+            currentAngularVelocity = maxRotation * Time.deltaTime;
+            currentHeading = currentHeading.TurnTowards(normalizedHeading, currentAngularVelocity);
+        }
 
         // Rotate the model to face current velocity heading
-        transform.rotation = Quaternion.LookRotation(currentHeading);
+        transform.rotation = Quaternion.LookRotation(currentHeading, new Vector3( 0f,currentAngularVelocity * cavScale, 0f));
         // Clamp the magnitude of velocity vector to max speed
         var velocity = Vector3.ClampMagnitude(currentHeading * speed * Time.deltaTime, speed);
         // Move the aircraft in worldspace

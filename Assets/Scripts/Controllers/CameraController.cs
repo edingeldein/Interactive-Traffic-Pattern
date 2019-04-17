@@ -5,13 +5,15 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     public Camera MainCamera;
+    public int NumSteps = 100;
     public Transform CurrentTarget;
     public bool Move;
-    public float a = 9f;
     Transform mainCameraTrans;
     Transform eastCameraTrans;
     Transform westCameraTrans;
-    float vMax;
+    Vector3 step;
+    int stepNum;
+    float speed;
 
     // Start is called before the first frame update
     void Start()
@@ -26,21 +28,34 @@ public class CameraController : MonoBehaviour
     {
         if (!Move) return;
 
-        MainCamera.transform.position = CurrentTarget.position;
+        MainCamera.transform.position = MainCamera.transform.position + step;
         MainCamera.transform.rotation = CurrentTarget.rotation;
 
-        Move = (MainCamera.transform.position == CurrentTarget.position &&
-            MainCamera.transform.rotation == CurrentTarget.rotation);
+        Move = !(stepNum >= NumSteps);
+        stepNum++;
     }
 
     public void SetTransform(CameraPosition pos)
     {
         if (pos == CameraPosition.Main)
+        {
+
             CurrentTarget = mainCameraTrans;
+        }
         else if (pos == CameraPosition.East)
+        {
             CurrentTarget = eastCameraTrans;
+        }
         else
+        {
             CurrentTarget = westCameraTrans;
+        }
+
+        Vector3 cameraPos = MainCamera.transform.position;
+        Vector3 targetPos = CurrentTarget.position;
+        Vector3 displacement = targetPos - cameraPos;
+        step = displacement / NumSteps;
+        stepNum = 0;
 
         Move = true;
     }

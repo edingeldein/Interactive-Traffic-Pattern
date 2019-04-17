@@ -4,17 +4,19 @@ using UnityEngine;
 using Extensions;
 
 public class Fly : MonoBehaviour
-{
-    public float speed = 5f;
-    public float maxRotation = 6f;
-    public float cavScale = 4f;
-    //public float minDist = 0.05f;
+{ 
+    // Navigation variables
     public Transform[] waypoints;
-
     private bool flying = false;
     private int destPoint = 0;
-    private Vector3 destination;
+    private Transform destination;
+
+    // Aircraft state variables
+    public float speed = 5f;
+    public float maxRotationDPS = 6f;
+    public float standardBankAngle = 30f;
     private Vector3 currentHeading;
+    private Vector3 up;
     private float currentAngularVelocity;
     private float remainingDistance;
 
@@ -33,7 +35,7 @@ public class Fly : MonoBehaviour
             return;
 
         // Set the agent to go to the currently selected destination.
-        destination = waypoints[destPoint].position;
+        destination = waypoints[destPoint];
 
         // Choose the next point in the array as the destination, cycling to start if necessary.
         destPoint = (destPoint + 1) % waypoints.Length;
@@ -43,21 +45,34 @@ public class Fly : MonoBehaviour
     {
         // destination = Vector3 of the target waypoint transform
         // Calculating the directional vector (heading) to the next waypoint from current aircraft.
-        var heading = destination - transform.position;
+        var heading = destination.position - transform.position;
         var normalizedHeading = heading / heading.magnitude;
 
         // currentHeading = normalized instantaneous velocity vector of current aircraft.
         // If current heading isn't the same as the directional heading, turn towards the directional heading
         if (currentHeading != normalizedHeading)
         {
-            currentAngularVelocity = maxRotation * Time.deltaTime;
-            currentHeading = currentHeading.TurnTowards(normalizedHeading, currentAngularVelocity);
+            currentAngularVelocity = maxRotationDPS * Time.deltaTime;
+            Vector3 diff = normalizedHeading - currentHeading;
+
+            if (diff.magnitude < 0.01f)
+            {
+                currentHeading = normalizedHeading.normalized;
+            }
+            else
+            {
+                Vector3 diffVeloc = diff * currentAngularVelocity;
+                Vector3 newHeading = currentHeading + diffVeloc;
+                currentHeading = newHeading.normalized;
+            }            
         }
 
         // Rotate the model to face current velocity heading
-        transform.rotation = Quaternion.LookRotation(currentHeading, new Vector3( 0f,currentAngularVelocity * cavScale, 0f));
+        transform.rotation = Quaternion.LookRotation(currentHeading);
+
         // Clamp the magnitude of velocity vector to max speed
         var velocity = Vector3.ClampMagnitude(currentHeading * speed * Time.deltaTime, speed);
+
         // Move the aircraft in worldspace
         transform.Translate(velocity, Space.World);
     }

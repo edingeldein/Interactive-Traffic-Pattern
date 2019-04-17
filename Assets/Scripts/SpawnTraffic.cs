@@ -19,7 +19,7 @@ public class SpawnTraffic : MonoBehaviour, IPointerClickHandler
 
     void SpawnAircraft()
     {
-        var startPos = leftPattern[0].position + new Vector3(0f, 0f, 4f);
+        var startPos = leftPattern[0].position + new Vector3(0f, 0.5f, 2f);
         var startRot = Quaternion.LookRotation(leftPattern[1].position - startPos, Vector3.up);
         var aircraft = Instantiate(aircraftPrefab, startPos, startRot);
 

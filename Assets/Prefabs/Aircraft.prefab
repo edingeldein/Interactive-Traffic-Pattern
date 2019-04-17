@@ -84,9 +84,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30c95ed1cffd9dc42bf40e1695ff87c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 5
-  maxRotation: 1
   waypoints: []
+  speed: 5
+  maxRotationDPS: 1
 --- !u!54 &8796268048405031542
 Rigidbody:
   m_ObjectHideFlags: 0

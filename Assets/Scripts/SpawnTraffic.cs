@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class SpawnTraffic : MonoBehaviour, IPointerClickHandler
+public class SpawnTraffic : MonoBehaviour //, IPointerClickHandler
 {
 
     public GameObject aircraftPrefab;
@@ -17,11 +15,26 @@ public class SpawnTraffic : MonoBehaviour, IPointerClickHandler
         rightPattern = GetPatternTransforms(PatternDirection.Right);
     }
 
-    void SpawnAircraft()
+    public void SpawnAircraft(string location)
     {
-        var startPos = leftPattern[0].position + new Vector3(0f, 0.5f, 2f);
-        var startRot = Quaternion.LookRotation(leftPattern[1].position - startPos, Vector3.up);
+        Vector3 startPos = new Vector3(0f,0f,0f);
+        int startIndex = 0;
+        foreach(var trans in leftPattern)
+        {
+            if (trans.name.Equals(location))
+            {
+                startPos = trans.position + new Vector3(0f, 0.5f, 2f);
+                break;
+            }
+            startIndex++;
+        }
+
+        if (startPos == null)
+            return;
+        var startRot = Quaternion.LookRotation(leftPattern[(startIndex + 1) % leftPattern.Length].position - startPos, Vector3.up);
         var aircraft = Instantiate(aircraftPrefab, startPos, startRot);
+        aircraft.GetComponent<Fly>().DestPoint = startIndex;
+        aircraft.GetComponent<Fly>().Destination = leftPattern[startIndex];
 
         var aircraftFly = aircraft.GetComponent<Fly>();
         aircraftFly.waypoints = leftPattern;
@@ -43,10 +56,10 @@ public class SpawnTraffic : MonoBehaviour, IPointerClickHandler
         return patternWaypoints;
     }
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-        SpawnAircraft();
-    }
+    //public void OnPointerClick(PointerEventData eventData)
+    //{
+    //    SpawnAircraft();
+    //}
 }
 
 internal enum PatternDirection

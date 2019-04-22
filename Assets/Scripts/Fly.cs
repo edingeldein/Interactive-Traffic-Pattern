@@ -8,8 +8,8 @@ public class Fly : MonoBehaviour
     // Navigation variables
     public Transform[] waypoints;
     private bool flying = false;
-    private int destPoint = 0;
-    private Transform destination;
+    public int DestPoint = 0;
+    public Transform Destination;
 
     // Aircraft state variables
     public float speed = 5f;
@@ -35,17 +35,17 @@ public class Fly : MonoBehaviour
             return;
 
         // Set the agent to go to the currently selected destination.
-        destination = waypoints[destPoint];
+        Destination = waypoints[DestPoint];
 
         // Choose the next point in the array as the destination, cycling to start if necessary.
-        destPoint = (destPoint + 1) % waypoints.Length;
+        DestPoint = (DestPoint + 1) % waypoints.Length;
     }
 
     void Move()
     {
         // destination = Vector3 of the target waypoint transform
         // Calculating the directional vector (heading) to the next waypoint from current aircraft.
-        var heading = destination.position - transform.position;
+        var heading = Destination.position - transform.position;
         var normalizedHeading = heading / heading.magnitude;
 
         // currentHeading = normalized instantaneous velocity vector of current aircraft.

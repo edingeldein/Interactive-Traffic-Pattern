@@ -13,12 +13,9 @@ public class UIController : MonoBehaviour
     Button mainBtn;
 
     Canvas spawnCanvas;
-    Dictionary<string, Button> toggleDict;
-    Toggle startTog;
-    Toggle crosswindTog;
-    Toggle downwindTog;
-    Toggle baseTog;
-    Toggle finalTog;
+    Dictionary<string, Button> spawnBtnDict;
+
+    SpawnTraffic currentPattern;
 
     // Start is called before the first frame update
     void Start()
@@ -30,12 +27,12 @@ public class UIController : MonoBehaviour
         Canvas spawnCanvas = GameObject.Find("SpawnCanvas").GetComponent<Canvas>();
         spawnCanvas.enabled = false;
 
-        toggleDict = new Dictionary<string, Button>();
-        toggleDict.Add("Start", GameObject.Find("btnStart").GetComponent<Button>());
-        toggleDict.Add("Crosswind", GameObject.Find("btnCrosswind").GetComponent<Button>());
-        toggleDict.Add("Downwind", GameObject.Find("btnDownwind").GetComponent<Button>());
-        toggleDict.Add("Base", GameObject.Find("btnBase").GetComponent<Button>());
-        toggleDict.Add("Final", GameObject.Find("btnFinal").GetComponent<Button>());
+        spawnBtnDict = new Dictionary<string, Button>();
+        spawnBtnDict.Add("Start", GameObject.Find("btnStart").GetComponent<Button>());
+        spawnBtnDict.Add("Crosswind", GameObject.Find("btnCrosswind").GetComponent<Button>());
+        spawnBtnDict.Add("Downwind", GameObject.Find("btnDownwind").GetComponent<Button>());
+        spawnBtnDict.Add("Base", GameObject.Find("btnBase").GetComponent<Button>());
+        spawnBtnDict.Add("Final", GameObject.Find("btnFinal").GetComponent<Button>());
 
         CameraController = GameObject.Find("CameraPositions").GetComponent<CameraController>();
         DisableButton(mainBtn);
@@ -45,20 +42,28 @@ public class UIController : MonoBehaviour
             CameraController.SetTransform(CameraPosition.East);
             DisableButton(eastBtn);
             spawnCanvas.enabled = true;
+            currentPattern = GameObject.Find("17L/35R").GetComponent<SpawnTraffic>();
         });
         westBtn.onClick.AddListener(() =>
         {
             CameraController.SetTransform(CameraPosition.West);
             DisableButton(westBtn);
             spawnCanvas.enabled = true;
+            currentPattern = GameObject.Find("17R/35L").GetComponent<SpawnTraffic>();
         });
         mainBtn.onClick.AddListener(() =>
         {
             CameraController.SetTransform(CameraPosition.Main);
             DisableButton(mainBtn);
             spawnCanvas.enabled = false;
+            currentPattern = null;
         });
 
+        foreach(var key in spawnBtnDict.Keys)
+        {
+            var spawnBtn = spawnBtnDict[key];
+            spawnBtn.onClick.AddListener(() => currentPattern.SpawnAircraft(key));
+        }
     }
 
     void DisableButton(Button button)

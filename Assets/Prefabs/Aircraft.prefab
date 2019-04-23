@@ -85,8 +85,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waypoints: []
+  DestPoint: 0
+  Destination: {fileID: 0}
   speed: 5
-  maxRotationDPS: 1
+  maxRotationDPS: 0.66
+  standardBankAngle: 30
 --- !u!54 &8796268048405031542
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -114,7 +117,7 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 6
+  m_Radius: 8
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!33 &3194946150448875021
 MeshFilter:

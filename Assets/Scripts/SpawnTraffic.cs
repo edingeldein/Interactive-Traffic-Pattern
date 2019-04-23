@@ -1,25 +1,23 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class SpawnTraffic : MonoBehaviour //, IPointerClickHandler
+public class SpawnTraffic : MonoBehaviour
 {
 
     public GameObject aircraftPrefab;
-    private Transform[] leftPattern;
-    private Transform[] rightPattern;
+    private Transform[] patternWaypoints;
 
     // Start is called before the first frame update
     void Start()
     {
-        leftPattern = GetPatternTransforms(PatternDirection.Left);
-        rightPattern = GetPatternTransforms(PatternDirection.Right);
+        patternWaypoints = GetPatternTransforms();
     }
 
     public void SpawnAircraft(string location)
     {
         Vector3 startPos = new Vector3(0f,0f,0f);
         int startIndex = 0;
-        foreach(var trans in leftPattern)
+        foreach(var trans in patternWaypoints)
         {
             if (trans.name.Equals(location))
             {
@@ -31,20 +29,19 @@ public class SpawnTraffic : MonoBehaviour //, IPointerClickHandler
 
         if (startPos == null)
             return;
-        var startRot = Quaternion.LookRotation(leftPattern[(startIndex + 1) % leftPattern.Length].position - startPos, Vector3.up);
+        var startRot = Quaternion.LookRotation(patternWaypoints[(startIndex + 1) % patternWaypoints.Length].position - startPos, Vector3.up);
         var aircraft = Instantiate(aircraftPrefab, startPos, startRot);
         aircraft.GetComponent<Fly>().DestPoint = startIndex;
-        aircraft.GetComponent<Fly>().Destination = leftPattern[startIndex];
+        aircraft.GetComponent<Fly>().Destination = patternWaypoints[startIndex];
 
         var aircraftFly = aircraft.GetComponent<Fly>();
-        aircraftFly.waypoints = leftPattern;
+        aircraftFly.waypoints = patternWaypoints;
         aircraftFly.BeginFlight();
     }
 
-    private Transform[] GetPatternTransforms(PatternDirection dir)
+    private Transform[] GetPatternTransforms()
     {
-        string patternName = (dir == PatternDirection.Left) ? "LeftPattern" : "RightPattern";
-        Transform tpTransform = transform.Find(patternName).transform;
+        Transform tpTransform = transform.Find("Pattern").transform;
 
         int numChildren = tpTransform.childCount;
         Transform[] patternWaypoints = new Transform[numChildren];
@@ -55,16 +52,5 @@ public class SpawnTraffic : MonoBehaviour //, IPointerClickHandler
 
         return patternWaypoints;
     }
-
-    //public void OnPointerClick(PointerEventData eventData)
-    //{
-    //    SpawnAircraft();
-    //}
-}
-
-internal enum PatternDirection
-{
-    Left,
-    Right
 }
 
